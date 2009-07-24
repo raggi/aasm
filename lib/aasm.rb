@@ -1,7 +1,6 @@
-require File.join(File.dirname(__FILE__), 'event')
-require File.join(File.dirname(__FILE__), 'state')
-require File.join(File.dirname(__FILE__), 'state_machine')
-require File.join(File.dirname(__FILE__), 'persistence')
+%w(event state state_machine persistence).each do |f|
+  require File.join(File.dirname(__FILE__), 'aasm', f)
+end
 
 module AASM
   def self.Version
