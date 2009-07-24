@@ -21,10 +21,7 @@ else
 end
 $package_version = CURRENT_VERSION
 
-PKG_FILES = FileList['[A-Z]*',
-'lib/**/*.rb',
-'doc/**/*'
-]
+PKG_FILES = FileList['[A-Z]*', 'lib/**/*.rb', 'doc/**/*']
 
 desc 'Generate documentation for the acts as state machine plugin.'
 rd = Rake::RDocTask.new(:rdoc) do |rdoc|
@@ -62,6 +59,10 @@ else
     pkg.need_zip = true
     pkg.need_tar = true
   end
+
+  task :gemspec => PKG_FILES do
+    open('aasm.gemspec', 'w') { |f| f.write spec.to_ruby }
+  end
 end
 
 if !defined?(Spec)
@@ -82,13 +83,9 @@ else
   end
 end
 
-if !defined?(Gem)
-  puts "Package target requires RubyGEMs"
-else
-  desc "sudo gem uninstall aasm && rake gem && sudo gem install pkg/aasm-3.0.0.gem"
-  task :reinstall do
-    puts `sudo gem uninstall aasm && rake gem && sudo gem install pkg/aasm-3.0.0.gem`
-  end
+task :reinstall => [:clobber_package, :gem] do
+  sh 'sudo gem uninstall aasm'
+  sh 'sudo gem install --local pkg/aasm-*.gem'
 end
 
 task :default => [:spec]
